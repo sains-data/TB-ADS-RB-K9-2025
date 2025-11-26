@@ -1,0 +1,127 @@
+---
+title: "Eksplorasi Data Antropometri dan IMT"
+author: "Rafli Al Mansyah Tambunan"
+date: "2025-11-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# --- 1. MEMUAT LIBRARY YANG DIBUTUHKAN ---
+# install.packages(c("dplyr", "ggplot2", "e1071")) # Hapus tanda '#' jika belum terinstal
+library(dplyr)
+library(ggplot2)
+library(e1071) 
+
+# --- 2. MEMUAT DAN MEMBERSIHKAN DATA SERTA MENGHITUNG IMT ---
+df_data <- read.csv("data_ads_bersih.csv") 
+
+# Daftar variabel antropometri
+vars_antropometri <- c("Tinggi_Badan", "Berat_Badan")
+
+# Pembersihan data dan perhitungan IMT
+df_clean_imt <- df_data %>%
+  select(all_of(vars_antropometri)) %>%
+  mutate_all(~as.numeric(as.character(.))) %>%
+  na.omit() %>%
+  # HITUNG IMT (Berat_Badan / (Tinggi_Badan dalam meter)^2)
+  mutate(IMT = Berat_Badan / ((Tinggi_Badan / 100)^2)) %>%
+  # Kategorisasi IMT (Menggunakan standar Asia Pasifik WHO)
+  mutate(Status_Gizi = case_when(
+    IMT < 18.5 ~ "Kurus (Underweight)",
+    IMT >= 18.5 & IMT < 25 ~ "Normal",
+    IMT >= 25 & IMT < 30 ~ "Kelebihan Berat (Overweight)",
+    IMT >= 30 ~ "Obesitas",
+    TRUE ~ "Tidak Terdefinisi"
+  ))
+
+# Daftar semua variabel numerik yang akan dianalisis (TB, BB, IMT)
+vars_to_analyze <- c("Tinggi_Badan", "Berat_Badan", "IMT")
+
+# ----------------------------------------------------------------------
+# FUNGSI UNTUK MENGHITUNG STATISTIK DESKRIPTIF LENGKAP
+# ----------------------------------------------------------------------
+
+hitung_deskriptif_lengkap <- function(x) {
+  x_clean <- na.omit(x)
+  
+  if (length(x_clean) < 2) return(NULL)
+  
+  data.frame(
+    N = length(x_clean),
+    Mean = mean(x_clean),
+    Median = median(x_clean),
+    Std_Dev = sd(x_clean),
+    Min = min(x_clean),
+    Max = max(x_clean),
+    IQR = IQR(x_clean),
+    Skewness = skewness(x_clean) 
+  ) %>% round(3)
+}
+
+# ----------------------------------------------------------------------
+# 3. STATISTIK DESKRIPTIF (PEMUSATAN, PENYEBARAN, SKEWNESS)
+# ----------------------------------------------------------------------
+
+cat("## 📐 3. Statistik Deskriptif: TB, BB, dan IMT\n")
+cat("------------------------------------------------------------------\n")
+
+deskriptif_final <- NULL
+
+for (var in vars_to_analyze) {
+  hasil <- hitung_deskriptif_lengkap(df_clean_imt[[var]])
+  if (!is.null(hasil)) {
+    hasil$Variabel <- gsub("_", " ", var)
+    deskriptif_final <- rbind(deskriptif_final, hasil)
+  }
+}
+
+print(deskriptif_final)
+cat("\n\n")
+
+# ----------------------------------------------------------------------
+# 4. EKSPLORASI DATA VISUAL (IMT: HISTOGRAM, BOX PLOT, BAR CHART STATUS GIZI)
+# ----------------------------------------------------------------------
+
+cat("## 📈 4. Visualisasi Pola Fisik dan Status Gizi\n")
+cat("------------------------------------------------------\n")
+
+# A. Visualisasi Distribusi IMT (Histogram)
+print(
+  ggplot(df_clean_imt, aes(x = IMT)) +
+    geom_histogram(aes(y = after_stat(density)), bins = 20, fill = "darkgreen", color = "white", alpha = 0.7) +
+    labs(title = "Histogram Distribusi Indeks Massa Tubuh (IMT)",
+         x = "IMT",
+         y = "Kepadatan") +
+    theme_minimal()
+)
+
+# B. Visualisasi Deteksi Pencilan IMT (Box Plot)
+print(
+  ggplot(df_clean_imt, aes(y = IMT)) +
+    geom_boxplot(fill = "lightgreen", outlier.colour = "red", outlier.shape = 8) +
+    labs(title = "Box Plot (Deteksi Pencilan) Indeks Massa Tubuh",
+         y = "IMT") +
+    theme_minimal()
+)
+# # C. Visualisasi Status Gizi (Bar Chart)
+print(
+  df_clean_imt %>%
+    group_by(Status_Gizi) %>%
+    summarise(N = n()) %>%
+    mutate(Persentase = N / sum(N)) %>%
+    ggplot(aes(x = reorder(Status_Gizi, Persentase), y = Persentase, fill = Status_Gizi)) +
+    geom_bar(stat = "identity") +
+    geom_text(aes(label = scales::percent(Persentase)), vjust = -0.5) +
+    labs(title = "Distribusi Status Gizi Mahasiswa (Berdasarkan IMT)",
+         x = "Status Gizi (Kategori IMT)",
+         y = "Persentase") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "none")
+)
+
+```
