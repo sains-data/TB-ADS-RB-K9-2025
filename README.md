@@ -24,13 +24,15 @@ Fokus proyek ini adalah analisis data antropometri (Tinggi Badan, Berat Badan, d
 
 ## 📁 Struktur Repositori
 
-| File/Folder                | Keterangan |
-|---------------------------|------------|
-| **R_Code_IMT_Analysis.R** | Skrip lengkap R (cleaning, analisis, visualisasi). |
-| **Laporan_Final_IMT.pdf** | Laporan akhir berisi hasil, interpretasi, dan kesimpulan. |
-| **data_ads_bersih.csv**   | Dataset yang digunakan (sudah dibersihkan). |
-| **Output_Visualisasi/**   | Folder berisi hasil visualisasi (Histogram, Boxplot, Bar Chart). |
-| **README.md**             | File deskripsi repositori. |
+| File/Folder                       | Keterangan                                                                                               |
+|----------------------------------|-----------------------------------------------------------------------------------------------------------|
+| **Tugas Besar Analisis Data Statistik.pdf** | Laporan Final Tugas Besar ADS Kelompok 9 2025.                                                             |
+| **codeR_9_RB.Rmd**               | Skrip lengkap R yang berisi seluruh proses dari data cleaning hingga visualisasi dan perhitungan statistik (R Markdown File). |
+| **data_ads_bersih.csv**         | Dataset yang telah melalui proses pembersihan dan siap digunakan untuk analisis IMT.                      |
+| **dataset_asil_ads_Sheet1.csv** | Dataset asli dari survei (belum dibersihkan).                                                             |
+| **POSTER_9_RB.png**             | Visualisasi/poster ringkasan proyek (upload poster visualisasi).                                          |
+| **README.md**                   | File deskripsi repositori ini (yang sedang Anda baca).                                                    |
+
 
 ---
 
