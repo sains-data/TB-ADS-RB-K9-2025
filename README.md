@@ -6,34 +6,31 @@
 
 ---
 
-# 📊 Penerapan Analisis Data Eksplorasi (EDA)
-**Data Antropometri Mahasiswa ITERA Menggunakan RStudio**  
+# 📊 Penerapan Analisis Data Eksplorasi (EDA) pada Data Antropometri Mahasiswa ITERA Menggunakan RStudio  
 **Tugas Besar Analisis Data Statistika 2025 – Kelompok 9 RB**
 
-Repositori ini berisi seluruh materi dan hasil pengerjaan untuk Tugas Besar mata kuliah **Analisis Data Statistika 2025**.  
+Repositori ini berisi seluruh hasil pengerjaan Tugas Besar mata kuliah **Analisis Data Statistika 2025**.  
 Fokus proyek ini adalah analisis data antropometri (Tinggi Badan, Berat Badan, dan IMT) mahasiswa Institut Teknologi Sumatera tahun 2025.
 
 ---
 
 ## 🎯 Tujuan Utama Proyek
 - Melakukan **Data Cleaning** dan manipulasi data menggunakan R.  
-- Menghitung **Statistik Deskriptif** (Mean, Median, Skewness) pada variabel tinggi badan, berat badan, dan IMT.  
+- Menghitung **Statistik Deskriptif** (mean, median, skewness, dsb.) pada variabel tinggi badan, berat badan, dan IMT.  
 - Mengimplementasikan **Eksplorasi Data Visual (EDA)** untuk menganalisis distribusi data, status gizi, dan mendeteksi **outlier**.
 
 ---
 
 ## 📁 Struktur Repositori
 
-| File/Folder                       | Keterangan                                                                                               |
-|----------------------------------|-----------------------------------------------------------------------------------------------------------|
-| **Tugas Besar Analisis Data Statistik.pdf** | Laporan Final Tugas Besar ADS Kelompok 9 2025.                                                             |
-| **codeR_9_RB.Rmd**               | Skrip lengkap R yang berisi seluruh proses dari data cleaning hingga visualisasi dan perhitungan statistik (R Markdown File). |
-| **data_ads_bersih.csv**         | Dataset yang telah melalui proses pembersihan dan siap digunakan untuk analisis IMT.                      |
-| **dataset_asil_ads_Sheet1.csv** | Dataset asli dari survei (belum dibersihkan).                                                             |
-| **POSTER_9_RB.png**             | Visualisasi/poster ringkasan proyek (upload poster visualisasi).                                          |
-| **README.md**                   | File deskripsi repositori ini (yang sedang Anda baca).                                                    |
+| File/Folder                                  | Keterangan                                                                                                      |
+|----------------------------------------------|------------------------------------------------------------------------------------------------------------------|                                                        |
+| **codeR_9_RB.Rmd**                            | Skrip lengkap R yang berisi seluruh proses dari data cleaning hingga visualisasi dan perhitungan statistik (R Markdown File). |
+| **data_bersih_fix - Sheet1.csv**              | Dataset yang telah divalidasi dan siap digunakan untuk analisis IMT.                                            |
+| **Poster_9_RB.png**                           | Visualisasi/poster ringkasan proyek (Output utama hasil analisis).                                              |
+| **README.md**                                 | File deskripsi repositori ini.                                                                                  |
 
 
----
+
 
 
