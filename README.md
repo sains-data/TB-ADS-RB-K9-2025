@@ -23,12 +23,13 @@ Fokus proyek ini adalah analisis data antropometri (Tinggi Badan, Berat Badan, d
 
 ## 📁 Struktur Repositori
 
-| File/Folder                                  | Keterangan                                                                                                      |
-|----------------------------------------------|------------------------------------------------------------------------------------------------------------------|                                                        |
-| **codeR_9_RB.Rmd**                            | Skrip lengkap R yang berisi seluruh proses dari data cleaning hingga visualisasi dan perhitungan statistik (R Markdown File). |
-| **data_bersih_fix - Sheet1.csv**              | Dataset yang telah divalidasi dan siap digunakan untuk analisis IMT.                                            |
-| **Poster_9_RB.png**                           | Visualisasi/poster ringkasan proyek (Output utama hasil analisis).                                              |
-| **README.md**                                 | File deskripsi repositori ini.                                                                                  |
+| File/Folder                     | Keterangan                                                                                                      |
+|---------------------------------|------------------------------------------------------------------------------------------------------------------|
+| **codeR_9_RB.Rmd**              | Skrip lengkap R yang berisi seluruh proses dari data cleaning hingga visualisasi dan perhitungan statistik.     |
+| **data_bersih_fix - Sheet1.csv** | Dataset yang telah divalidasi dan siap digunakan untuk analisis IMT.                                            |
+| **Poster_9_RB.png**             | Visualisasi/poster ringkasan proyek (output utama hasil analisis).                                              |
+| **README.md**                   | File deskripsi repositori ini.                                                                                  |
+
 
 
 
