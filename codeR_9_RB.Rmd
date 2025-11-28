@@ -1,0 +1,181 @@
+---
+title: "Penerapan Analisis Data Eksplorasi (EDA) pada Data Antropometri Mahasiswa ITERA Menggunakan RStudio"
+author: "Kelompok 9"
+date: "2025-11-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# ================================================================
+# 1. LIBRARY
+# ================================================================
+library(dplyr)
+library(ggplot2)
+library(e1071)
+library(readr)
+
+# ================================================================
+# 2. MEMUAT DATA DAN MENYESUAIKAN DENGAN STRUKTUR DATASET
+# ================================================================
+df_data <- read_csv("data_bersihfix - Sheet1.csv")
+
+# --- DETEKSI OTOMATIS KOLOM TINGGI & BERAT ---
+nama_kolom <- names(df_data)
+
+kolom_tinggi <- nama_kolom[grepl("tinggi|tb|tinggi_badan", nama_kolom, ignore.case = TRUE)][1]
+kolom_berat  <- nama_kolom[grepl("berat|bb|berat_badan",  nama_kolom, ignore.case = TRUE)][1]
+
+cat("Kolom Tinggi terdeteksi   :", kolom_tinggi, "\n")
+cat("Kolom Berat terdeteksi    :", kolom_berat, "\n")
+
+# Cek jika kolom tidak ditemukan
+if (is.na(kolom_tinggi) | is.na(kolom_berat)) {
+  stop("❌ Kolom tinggi badan atau berat badan tidak ditemukan dalam dataset.")
+}
+
+# ================================================================
+# 3. MEMBERSIHKAN DATA DAN HITUNG IMT
+# ================================================================
+df_clean_imt <- df_data %>%
+  mutate(
+    tinggi = as.numeric(.data[[kolom_tinggi]]),
+    berat  = as.numeric(.data[[kolom_berat]])
+  ) %>%
+  na.omit() %>%
+  mutate(
+    IMT = berat / ((tinggi / 100)^2),
+    Status_Gizi = case_when(
+      IMT < 18.5 ~ "Kurus (Underweight)",
+      IMT >= 18.5 & IMT < 25 ~ "Normal",
+      IMT >= 25 & IMT < 30 ~ "Kelebihan Berat (Overweight)",
+      IMT >= 30 ~ "Obesitas",
+      TRUE ~ "Tidak Terdefinisi"
+    )
+  )
+
+vars_to_analyze <- c("tinggi", "berat", "IMT")
+
+# ================================================================
+# 4. FUNGSI STATISTIK DESKRIPTIF
+# ================================================================
+hitung_deskriptif_lengkap <- function(x) {
+  x_clean <- na.omit(x)
+  
+  if (length(x_clean) < 2) return(NULL)
+  
+  data.frame(
+    N = length(x_clean),
+    Mean = mean(x_clean),
+    Median = median(x_clean),
+    Std_Dev = sd(x_clean),
+    Min = min(x_clean),
+    Max = max(x_clean),
+    IQR = IQR(x_clean),
+    Skewness = skewness(x_clean)
+  ) %>% round(3)
+}
+
+# ================================================================
+# 5. STATISTIK DESKRIPTIF
+# ================================================================
+cat("\n\n## 📐 Statistik Deskriptif\n")
+
+deskriptif_final <- NULL
+for (v in vars_to_analyze) {
+  hasil <- hitung_deskriptif_lengkap(df_clean_imt[[v]])
+  if (!is.null(hasil)) {
+    hasil$Variabel <- v
+    deskriptif_final <- rbind(deskriptif_final, hasil)
+  }
+}
+print(deskriptif_final)
+
+# ================================================================
+# 6. VISUALISASI IMT (Histogram, Boxplot, Bar Chart)
+# ================================================================
+cat("\n\n## 📈 Visualisasi IMT\n")
+
+print(
+  ggplot(df_clean_imt, aes(x = IMT)) +
+    geom_histogram(aes(y = after_stat(density)), bins = 20, fill = "darkgreen") +
+    labs(title = "Histogram Distribusi IMT")
+)
+
+print(
+  ggplot(df_clean_imt, aes(y = IMT)) +
+    geom_boxplot(fill = "lightgreen", outlier.colour = "red") +
+    labs(title = "Boxplot IMT")
+)
+
+print(
+  df_clean_imt %>%
+    group_by(Status_Gizi) %>%
+    summarise(N = n()) %>%
+    mutate(Persentase = N / sum(N)) %>%
+    ggplot(aes(x = Status_Gizi, y = Persentase, fill = Status_Gizi)) +
+    geom_bar(stat = "identity") +
+    geom_text(aes(label = scales::percent(Persentase)), vjust = -0.5) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(title = "Distribusi Status Gizi Mahasiswa")
+)
+
+# ================================================================
+# 7. VISUALISASI SKEWNESS
+# ================================================================
+cat("\n\n## 🌀 Visualisasi Skewness\n")
+
+plot_skewness <- function(data, var_name) {
+  nilai_skew <- round(skewness(data[[var_name]], na.rm = TRUE), 3)
+  
+  ggplot(data, aes(x = .data[[var_name]])) +
+    geom_density(fill = "skyblue") +
+    geom_vline(aes(xintercept = mean(.data[[var_name]], na.rm = TRUE)), 
+               color = "red", linetype = "dashed") +
+    labs(title = paste("Distribusi dan Skewness:", var_name),
+         subtitle = paste("Skewness =", nilai_skew))
+}
+
+for (v in vars_to_analyze) print(plot_skewness(df_clean_imt, v))
+
+# ================================================================
+# 8. UJI NORMALITAS SHAPIRO-WILK
+# ================================================================
+cat("\n\n## 📌 Uji Normalitas Shapiro-Wilk\n")
+
+hasil_shapiro <- data.frame()
+
+for (v in vars_to_analyze) {
+  test <- shapiro.test(df_clean_imt[[v]])
+  hasil_shapiro <- rbind(
+    hasil_shapiro,
+    data.frame(
+      Variabel = v,
+      W = round(test$statistic, 4),
+      p_value = round(test$p.value, 4),
+      Kesimpulan = ifelse(test$p.value > 0.05, 
+                          "Normal", "Tidak normal")
+    )
+  )
+}
+
+print(hasil_shapiro)
+
+# ================================================================
+# 9. QQ-PLOT
+# ================================================================
+cat("\n\n## 📈 QQ Plot\n")
+
+plot_qq <- function(data, var_name) {
+  ggplot(data, aes(sample = .data[[var_name]])) +
+    stat_qq() +
+    stat_qq_line(color = "red") +
+    labs(title = paste("QQ Plot -", var_name))
+}
+
+for (v in vars_to_analyze) print(plot_qq(df_clean_imt, v))
+
+```
