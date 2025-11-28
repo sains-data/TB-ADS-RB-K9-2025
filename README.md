@@ -1,5 +1,5 @@
-# 📊 TB-ADS-2025-IMT-K9  
-## Eksplorasi Data Antropometri Mahasiswa ITERA  
+# 📊 TUGAS BESAR ANALISIS DATA STATISTIKA 2025
+## Penerapan Analisis Data Eksplorasi (EDA) pada Data Antropometri Mahasiswa ITERA Menggunakan RStudio
 ### Tugas Besar Analisis Data Statistika 2025 – Kelompok 9 RB
 
 Repositori ini berisi proyek Tugas Besar mata kuliah **Analisis Data Statistika 2025** oleh Kelompok 9 RB.  
